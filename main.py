@@ -1,93 +1,177 @@
 import os
+from platform import libc_ver
 import sys
-import threading
-import time
-import multiprocessing
 import logging
+import multiprocessing
 import psutil
-import signal
-
+import ctypes
+import ctypes.util
+from queue import Queue
 
 logging.basicConfig(filename='process_manager.log', level=logging.INFO,
                     format='%(asctime)s - %(message)s')
+process_log = logging.getLogger('processes')
+process_log.setLevel(logging.INFO)
 
 previous_choice = None
+shared_queue = Queue()
+mutex = multiprocessing.Lock()
 result = ""
 running_processes = {}
+process_threads = {}
+threads = []
+pipe_conn, child_conn = multiprocessing.Pipe()
+
 
 choices = {
     "1": "Create Process",
     "2": "List Processes",
     "3": "Create Thread",
-    "4": "IPC: Send Message",
-    "5": "Process Synchronization",
-    "6": "Exit"
+    "4": "Terminate Thread",
+    "5": "IPC: Send Message",
+    "6": "IPC: Recieve Message",
+    "7": "Process Synchronization",
+    "8": "Exit"
 }
 
 
-def create_process(process_name, command):
+def create_process(process_name):
     pid = os.fork()
     if pid == 0:
         try:
-            os.execlp(command, command)
+            pass
         except Exception as e:
-            logging.error(f"Child process failed: {e}")
-            print(f"Child process failed: {e}")
-        os._exit(1)
+            logging.error(
+                f"Child process '{process_name}' with PID {os.getpid()} encountered an error: {str(e)}")
+        os._exit(0)
     else:
         running_processes[pid] = process_name
-        print(f"Process {process_name} created with PID {pid}")
-
-
-def terminate_process(process_pid):
-    try:
-        os.kill(process_pid, signal.SIGTERM)
-        del running_processes[process_pid]
-        print(f"Terminated process with PID {process_pid}.")
-    except ProcessLookupError:
-        print(f"Process {process_pid} not found.")
+        logging.info(f"Child process '{process_name}' with PID {pid} created.")
+        process_function(process_name)
 
 
 def list_processes():
-    print("List of running processes:")
+    process_log.info("List of running processes:")
 
-    for proc in psutil.process_iter(attrs=['pid', 'name', 'status']):
-        process_info = proc.info
+    for process in psutil.process_iter(attrs=['pid', 'ppid', 'name', 'status']):
+        process_info = process.info
+        pid = process_info['pid']
+        ppid = process_info['ppid']
+        name = process_info['name']
+        status = process_info['status']
+        process_log.info(
+            f"Process with PID: {pid}, Parent PID: {ppid}, Name: {name}, Status: {status}")
         print(
-            f"Process with PID: {process_info['pid']}, Name: {process_info['name']}, Status: {process_info['status']}")
+            f"Process with PID: {pid}, Parent PID: {ppid}, Name: {name}, Status: {status}")
+    print('\n')
 
-    logging.info("List of running processes:")
 
-    for proc in psutil.process_iter(attrs=['pid', 'name', 'status']):
-        process_info = proc.info
-        logging.info(
-            f"Process with PID: {process_info['pid']}, Name: {process_info['name']}, Status: {process_info['status']}")
+def process_function(process_name):
+    process_log.info(
+        f"Child process '{process_name}' with PID {os.getpid()} running")
+    process_threads[os.getpid()] = []
+
+    while True:
+        print("Options within the process:")
+        print("1. Create a thread")
+        print("2. List threads")
+        print("3. Exit process")
+        choice = input("Select an option: ")
+
+        if choice == "1":
+            thread_name = input("Enter a name for the thread: ")
+            create_thread(thread_name)
+            print('\n')
+        elif choice == "2":
+            list_threads()
+            print('\n')
+        elif choice == "3":
+            print("Exited process.")
+            break
+        else:
+            print("Invalid option. Try again.")
+    return
 
 
 def create_thread(thread_name):
-    thread = threading.Thread(target=thread_function, args=(thread_name,))
-    thread.start()
-    print(f"Thread '{thread_name}' started.")
+    process_pid = os.getpid()
+    thread_id = ctypes.c_long()
+
+    def thread_function():
+        logging.info(f"Thread '{thread_name}' running")
+
+    thread_func_pointer = ctypes.CFUNCTYPE(None)(thread_function)
+    libc = ctypes.CDLL(ctypes.util.find_library('c'))
+
+    if libc.pthread_create(ctypes.byref(thread_id), None, thread_func_pointer, None) == 0:
+        threads.append((thread_id, thread_name))
+        process_threads.setdefault(process_pid, []).append(
+            (thread_id, thread_name))
+        logging.info(f"Thread '{thread_name}' created successfully")
+    else:
+        logging.error("Failed to create thread")
 
 
-def thread_function(thread_name):
+def list_threads():
+    process_pid = os.getpid()
+    threads = process_threads.get(process_pid, [])
 
-    print(f"Thread '{thread_name}' running.")
-
-    time.sleep(2)
-
-    print(f"Thread '{thread_name}' finished.")
-
-    logging.info(f"Thread '{thread_name}' running.")
-
-    time.sleep(2)
-
-    logging.info(f"Thread '{thread_name}' finished.")
+    if not threads:
+        print("No threads in this process.")
+    else:
+        print("Threads in this process:")
+        for thread_id, thread_name in threads:
+            print(f"Thread ID: {thread_id}, Name: {thread_name}")
 
 
-def ipc_message_passing(message):
-    print(f"Message received: {message}")
-    logging.info(f"Message received: {message}")
+def terminate_thread(thread_name):
+    global threads
+    threads_to_remove = []
+
+    process_pid = os.getpid()
+    libc = ctypes.CDLL(ctypes.util.find_library('c'))
+
+    for thread_id, name in process_threads.get(process_pid, []):
+        if name == thread_name:
+            if libc.pthread_cancel(thread_id) == 0:
+                print(f"Thread '{thread_name}' termination requested.")
+                logging.info(f"Thread '{thread_name}' termination requested.")
+                threads_to_remove.append((thread_id, name))
+            else:
+                logging.error(
+                    f"Failed to request termination for thread '{thread_name}'")
+
+    for thread_id, name in threads_to_remove:
+        if libc.pthread_join(thread_id, None) == 0:
+            print(f"Thread '{name}' terminated.")
+            logging.info(f"Thread '{name}' terminated.")
+    threads = [(t, n) for t, n in threads if (t, n) not in threads_to_remove]
+
+
+def ipc_send_message(message):
+    child_conn.send(message)
+    print(f"Message sent over IPC: {message}")
+    logging.info(f"Message sent over IPC: {message}")
+
+
+def ipc_receive_message():
+    log_file_path = 'process_manager.log'
+    received_messages = []
+
+    if not os.path.exists(log_file_path):
+        return ["Log file not found"]
+
+    with open(log_file_path, 'r') as log_file:
+        lines = log_file.readlines()
+        for line in lines:
+            if "Message sent over IPC: " in line:
+                message = line.split("Message sent over IPC: ")[1].strip()
+                received_messages.append(message)
+
+    if received_messages:
+        return received_messages
+    else:
+        return ["No message available"]
 
 
 def process_synchronization():
@@ -135,13 +219,9 @@ if __name__ == '__main__':
 
         choice = input("Enter choice: ")
 
-        if choice == "6":
-            break
-
         if choice == "1":
             process_name = input("Enter process name: ")
-            command = input("Enter command: ")
-            create_process(process_name, command)
+            create_process(process_name)
 
         elif choice == "2":
             list_processes()
@@ -151,12 +231,22 @@ if __name__ == '__main__':
             create_thread(thread_name)
 
         elif choice == "4":
-            message = input("Enter message: ")
-            ipc_message_passing(message)
+            thread_name = input("Enter thread name: ")
+            terminate_thread(thread_name)
 
         elif choice == "5":
-            process_synchronization()
+            message = input("Enter message: ")
+            ipc_send_message(message)
 
         elif choice == "6":
+            received_messages = ipc_receive_message()
+            print('\n')
+            for message in received_messages:
+                print(f"Received message: {message}")
+
+        elif choice == "7":
+            process_synchronization()
+
+        elif choice == "8":
             print("Exited successfully")
             exit(0)
