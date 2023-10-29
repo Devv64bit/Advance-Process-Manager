@@ -95,4 +95,4 @@ The Process Manager project includes the following functionalities:
 ![Alt text](/imgs/image-9.png)
 
 ## Process Manager.log file
-![Alt text](image-10.png)
+![Alt text](/imgs/image-10.png)
