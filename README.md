@@ -1,7 +1,4 @@
 # Advance-Process-Manager Project Report
-# Due date : 10/29/2023
-
-# Process Manager Project Report
 
 ## Table of Contents
 - [Installation](#installation)
@@ -10,17 +7,16 @@
 - [Test Results](#test-results)
 - [Discussion](#discussion)
 
-
 ## Installation
 
 ### Clone the repository to your local machine using the following Git command:
-```git clone <repository_url> ```
+```bash git clone <repository_url> ```
 
 ### Install the required dependencies using the following command:
-```pip install -r requirements.txt ```
+```bash pip install -r requirements.txt ```
 
 ### Run the Process Manager using the following command:
-```python3 main.py```
+```bash python3 main.py```
 
 ## Introduction
 
@@ -67,3 +63,6 @@ The Process Manager project includes the following functionalities:
 - Implements logging and reporting features to track and display the execution of processes and threads.
 - Logs significant events, errors, and information related to process synchronization.
 
+## Test Results
+### Create Process
+![Alt text](/imgs/image.png)
