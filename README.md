@@ -83,14 +83,17 @@ In this screenshot, the "List Processes" functionality is showcased. It displays
 
 ### Create Thread
 This image illustrates the creation of a new thread within a process. Users can specify a thread name, and the Process Manager creates a new thread successfully.
+
 ![Alt text](/imgs/image-4.png)
 
 ### Terminate Thread
 In this screenshot, the termination of a thread is demonstrated. Users can provide the thread name, and the Process Manager requests the termination of the specified thread, followed by a successful termination message. 
+
 ![Alt text](/imgs/image-5.png)
 
 ### IPC: Send Message
 This section showcases the inter-process communication (IPC) feature. Users can send a message using IPC, and the Process Manager delivers the message successfully.
+
 ![Alt text](/imgs/image-6.png)
 ![Alt text](/imgs/image-7.png)
 
@@ -101,8 +104,10 @@ Here, the Process Manager demonstrates the capability to receive messages throug
 
 ### Process Synchronization
 The screenshot presents the demonstration of process synchronization using multiprocessing. It shows the producer-consumer pattern, where items are produced and consumed with synchronization. The Process Manager logs the synchronization events in the Process Manager.log file.
+
 ![Alt text](/imgs/image-9.png)
 
 ## Process Manager.log file
 The screenshot below shows the Process Manager.log file, which logs all the events, errors, and information related to process synchronization.
+
 ![Alt text](/imgs/image-10.png)
