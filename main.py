@@ -1,27 +1,20 @@
 import os
-from platform import libc_ver
-import sys
 import logging
 import multiprocessing
 import psutil
 import ctypes
 import ctypes.util
-from queue import Queue
+import sys
 
 logging.basicConfig(filename='process_manager.log', level=logging.INFO,
                     format='%(asctime)s - %(message)s')
 process_log = logging.getLogger('processes')
 process_log.setLevel(logging.INFO)
 
-previous_choice = None
-shared_queue = Queue()
+shared_queue = multiprocessing.Queue()
 mutex = multiprocessing.Lock()
-result = ""
-running_processes = {}
 process_threads = {}
 threads = []
-pipe_conn, child_conn = multiprocessing.Pipe()
-
 
 choices = {
     "1": "Create Process",
@@ -45,16 +38,14 @@ def create_process(process_name):
                 f"Child process '{process_name}' with PID {os.getpid()} encountered an error: {str(e)}")
         os._exit(0)
     else:
-        running_processes[pid] = process_name
         logging.info(f"Child process '{process_name}' with PID {pid} created.")
         process_function(process_name)
 
 
 def list_processes():
     process_log.info("List of running processes:")
-
-    for process in psutil.process_iter(attrs=['pid', 'ppid', 'name', 'status']):
-        process_info = process.info
+    processes = psutil.process_iter(attrs=['pid', 'ppid', 'name', 'status'])
+    for process_info in processes:
         pid = process_info['pid']
         ppid = process_info['ppid']
         name = process_info['name']
@@ -87,6 +78,7 @@ def process_function(process_name):
             print('\n')
         elif choice == "3":
             print("Exited process.")
+            print('\n')
             break
         else:
             print("Invalid option. Try again.")
@@ -149,9 +141,12 @@ def terminate_thread(thread_name):
 
 
 def ipc_send_message(message):
-    child_conn.send(message)
-    print(f"Message sent over IPC: {message}")
-    logging.info(f"Message sent over IPC: {message}")
+    with multiprocessing.Lock():
+        # Using a multiprocessing.Pipe for IPC
+        parent_conn, child_conn = multiprocessing.Pipe()
+        child_conn.send(message)
+        print(f"Message sent over IPC: {message}")
+        logging.info(f"Message sent over IPC: {message}")
 
 
 def ipc_receive_message():
@@ -208,9 +203,10 @@ def process_synchronization():
     consumer_process.join()
 
     print("Process synchronization demonstration complete.")
+    logging.info("Process synchronization demonstration complete.")
 
 
-if __name__ == '__main__':
+def main():
     while True:
 
         print("Options:")
@@ -240,13 +236,24 @@ if __name__ == '__main__':
 
         elif choice == "6":
             received_messages = ipc_receive_message()
+            if received_messages:
+                print('\nReceived messages:')
+                for message in received_messages:
+                    print(f"- {message}")
+            else:
+                print("No messages received.")
             print('\n')
-            for message in received_messages:
-                print(f"Received message: {message}")
 
         elif choice == "7":
             process_synchronization()
 
         elif choice == "8":
             print("Exited successfully")
-            exit(0)
+            sys.exit(0)
+
+        else:
+            print("Invalid option. Try again.", '\n')
+
+
+if __name__ == "__main__":
+    main()  # Call main function
