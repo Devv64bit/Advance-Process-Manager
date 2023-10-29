@@ -10,13 +10,19 @@
 ## Installation
 
 ### Clone the repository to your local machine using the following Git command:
-```bash git clone <repository_url> ```
+```bash 
+git clone <repository_url> 
+```
 
 ### Install the required dependencies using the following command:
-```bash pip install -r requirements.txt ```
+```bash 
+pip install -r requirements.txt 
+```
 
 ### Run the Process Manager using the following command:
-```bash python3 main.py```
+```bash 
+python3 main.py
+```
 
 ## Introduction
 The goal of this project is to design and implement an advanced Process Manager with an emphasis on process synchronization. This Process Manager will allow users to create, manage, and synchronize processes in a multi-threaded environment. It will provide a command-line interface for process creation, management, and synchronization, and it will use system calls for process and thread control.
