@@ -44,8 +44,13 @@ def create_process(process_name):
 
 def list_processes():
     process_log.info("List of running processes:")
-    processes = psutil.process_iter(attrs=['pid', 'ppid', 'name', 'status'])
-    for process_info in processes:
+
+    for proc in psutil.process_iter(attrs=['pid', 'name', 'status']):
+        process_info = proc.info
+    process_log.info("List of running processes:")
+
+    for process in psutil.process_iter(attrs=['pid', 'ppid', 'name', 'status']):
+        process_info = process.info
         pid = process_info['pid']
         ppid = process_info['ppid']
         name = process_info['name']
