@@ -70,29 +70,38 @@ The Process Manager project includes the following functionalities:
 
 ## Test Results
 ### Create Process
+These screenshots demonstrates the creation of a new process. Users can input a process name, and the Process Manager successfully creates a new process with the provided name and assigns a unique Process ID (PID). Within the process, users can create threads, and list them. The Process Manager also logs the creation of the process and threads of the process in the Process Manager.log file.
+
 ![Alt text](/imgs/image-0.png)
 ![Alt text](/imgs/image.png)
 ![Alt text](/imgs/image-1.png)
 
 ### List Processes
+In this screenshot, the "List Processes" functionality is showcased. It displays process made by user, list of all running processes on your PC, including their PID, parent PID, name, and status. Users can easily monitor the running processes.
 ![Alt text](/imgs/image-2.png)
 ![Alt text](/imgs/image-3.png)
 
 ### Create Thread
+This image illustrates the creation of a new thread within a process. Users can specify a thread name, and the Process Manager creates a new thread successfully. The Process Manager also logs the creation of the thread in the Process Manager.log file.
 ![Alt text](/imgs/image-4.png)
 
 ### Terminate Thread
+In this screenshot, the termination of a thread is demonstrated. Users can provide the thread name, and the Process Manager requests the termination of the specified thread, followed by a successful termination message. The Process Manager also logs the termination of the thread in the Process Manager.log file.
 ![Alt text](/imgs/image-5.png)
 
 ### IPC: Send Message
+This section showcases the inter-process communication (IPC) feature. Users can send a message using IPC, and the Process Manager delivers the message successfully. The message sent is displayed in the screenshot. The Process Manager also logs the message sent in the Process Manager.log file.
 ![Alt text](/imgs/image-6.png)
 ![Alt text](/imgs/image-7.png)
 
 ### IPC: Receive Message
+Here, the Process Manager demonstrates the capability to receive messages through IPC. It displays the received messages from the log file, allowing users to retrieve and view them.
 ![Alt text](/imgs/image-8.png)
 
 ### Process Synchronization
+The screenshot presents the demonstration of process synchronization using multiprocessing. It shows the producer-consumer pattern, where items are produced and consumed with synchronization. The Process Manager logs the synchronization events in the Process Manager.log file.
 ![Alt text](/imgs/image-9.png)
 
 ## Process Manager.log file
+The screenshot below shows the Process Manager.log file, which logs all the events, errors, and information related to process synchronization.
 ![Alt text](/imgs/image-10.png)
