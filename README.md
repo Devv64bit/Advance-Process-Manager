@@ -82,20 +82,21 @@ In this screenshot, the "List Processes" functionality is showcased. It displays
 ![Alt text](/imgs/image-3.png)
 
 ### Create Thread
-This image illustrates the creation of a new thread within a process. Users can specify a thread name, and the Process Manager creates a new thread successfully. The Process Manager also logs the creation of the thread in the Process Manager.log file.
+This image illustrates the creation of a new thread within a process. Users can specify a thread name, and the Process Manager creates a new thread successfully.
 ![Alt text](/imgs/image-4.png)
 
 ### Terminate Thread
-In this screenshot, the termination of a thread is demonstrated. Users can provide the thread name, and the Process Manager requests the termination of the specified thread, followed by a successful termination message. The Process Manager also logs the termination of the thread in the Process Manager.log file.
+In this screenshot, the termination of a thread is demonstrated. Users can provide the thread name, and the Process Manager requests the termination of the specified thread, followed by a successful termination message. 
 ![Alt text](/imgs/image-5.png)
 
 ### IPC: Send Message
-This section showcases the inter-process communication (IPC) feature. Users can send a message using IPC, and the Process Manager delivers the message successfully. The message sent is displayed in the screenshot. The Process Manager also logs the message sent in the Process Manager.log file.
+This section showcases the inter-process communication (IPC) feature. Users can send a message using IPC, and the Process Manager delivers the message successfully.
 ![Alt text](/imgs/image-6.png)
 ![Alt text](/imgs/image-7.png)
 
 ### IPC: Receive Message
 Here, the Process Manager demonstrates the capability to receive messages through IPC. It displays the received messages from the log file, allowing users to retrieve and view them.
+
 ![Alt text](/imgs/image-8.png)
 
 ### Process Synchronization
