@@ -19,10 +19,9 @@
 ```bash python3 main.py```
 
 ## Introduction
+The goal of this project is to design and implement an advanced Process Manager with an emphasis on process synchronization. This Process Manager will allow users to create, manage, and synchronize processes in a multi-threaded environment. It will provide a command-line interface for process creation, management, and synchronization, and it will use system calls for process and thread control.
 
-The Process Manager is a Python project that provides process creation, management, and synchronization functionalities. It allows users to create and manage processes and threads, perform inter-process communication (IPC), and demonstrate process synchronization using various mechanisms.
-
-## Functionalities
+## Functionalities 
 
 The Process Manager project includes the following functionalities:
 - Process Creation
@@ -52,7 +51,7 @@ The Process Manager project includes the following functionalities:
 
 ### Process Synchronization
 - Implements synchronization primitives such as mutexes and semaphores.
-- Demonstrates the use of synchronization mechanisms to solve common synchronization problems (e.g., producer-consumer, reader-writer).
+- Demonstrates the use of synchronization mechanisms to solve common synchronization problems (e.g., producer-consumer).
 
 ### Command-Line Interface (CLI)
 - Provides a user-friendly interface for interacting with the Process Manager.
@@ -65,4 +64,29 @@ The Process Manager project includes the following functionalities:
 
 ## Test Results
 ### Create Process
+![Alt text](/imgs/image-0.png)
 ![Alt text](/imgs/image.png)
+![Alt text](/imgs/image-1.png)
+
+### List Processes
+![Alt text](/imgs/image-2.png)
+![Alt text](/imgs/image-3.png)
+
+### Create Thread
+![Alt text](/imgs/image-4.png)
+
+### Terminate Thread
+![Alt text](/imgs/image-5.png)
+
+### IPC: Send Message
+![Alt text](/imgs/image-6.png)
+![Alt text](/imgs/image-7.png)
+
+### IPC: Receive Message
+![Alt text](/imgs/image-8.png)
+
+### Process Synchronization
+![Alt text](/imgs/image-9.png)
+
+## Process Manager.log file
+![Alt text](image-10.png)
